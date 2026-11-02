@@ -326,16 +326,25 @@ section:not([hidden]),#det:not([hidden]){animation:fadeup .45s ease both}
    The dollar price stays the same. Every other money (rupees too) is worked out from it with today's rate.
    If we can't tell the country, only dollars are shown. */
 var CUR=null,RATES=null;
+/* Each money's symbol, e.g. € ₹ £. A few are written by hand where the browser only knows letters. */
+var SYM={CHF:'Fr.',KES:'KSh',UGX:'USh',TZS:'TSh',PEN:'S/',BGN:'лв',RSD:'дин',MKD:'ден',AED:'Dh',SAR:'SR',QAR:'QR'};
+function curSym(c){if(SYM[c])return SYM[c];
+ function f(d){try{var p=new Intl.NumberFormat('en',{style:'currency',currency:c,currencyDisplay:d}).formatToParts(1).filter(function(x){return x.type==='currency'})[0];return p?p.value.trim():c}catch(e){return c}}
+ var s=f('symbol');if(s!==c)return s;
+ var n=f('narrowSymbol');if(n===c)return c;
+ return (n==='$'||n==='£'||n==='¥')?c.slice(0,2)+n:n}
 function localPrice(u){
  if(!CUR||CUR==='USD')return '';
  if(!RATES||!RATES[CUR])return '';
- var v=u*RATES[CUR],o={style:'currency',currency:CUR};
- if(v>=100){o.minimumFractionDigits=0;o.maximumFractionDigits=0}
- try{return new Intl.NumberFormat(CUR==='INR'?'en-IN':'en',o).format(v)}catch(e){return ''}}
+ var v=u*RATES[CUR],d=2;
+ try{d=new Intl.NumberFormat('en',{style:'currency',currency:CUR}).resolvedOptions().maximumFractionDigits}catch(e){}
+ if(v>=100)d=0;
+ var sym=curSym(CUR),num=v.toLocaleString(CUR==='INR'?'en-IN':'en',{minimumFractionDigits:d,maximumFractionDigits:d});
+ return sym+(/[\p{L}.]$/u.test(sym)?' ':'')+num}
 function priceInner(u){var l=localPrice(u);return '$'+u+(l?' <span>('+l+')</span>':'')}
 function money(u){return '<data class="mp" value="'+u+'">'+priceInner(u)+'</data>'}
 function repaint(){document.querySelectorAll('data.mp').forEach(function(e){e.innerHTML=priceInner(+e.value)})}
-function curName(c){try{return new Intl.DisplayNames(['en'],{type:'currency'}).of(c)+' ('+c+')'}catch(e){return c}}
+function curName(c){var n=c;try{n=new Intl.DisplayNames(['en'],{type:'currency'}).of(c)}catch(e){}var y=curSym(c);return n+' ('+(y===c?c:y+' '+c)+')'}
 function fillPicker(){var sel=document.getElementById('curSel');if(!sel)return;
  var list=RATES?Object.keys(RATES):[];if(CUR&&list.indexOf(CUR)<0)list.push(CUR);
  list=list.filter(function(c){return c!=='USD'}).map(function(c){return [c,curName(c)]}).sort(function(a,b){return a[1]<b[1]?-1:1});
