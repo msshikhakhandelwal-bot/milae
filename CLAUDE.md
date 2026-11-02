@@ -10,7 +10,7 @@ This is the website for Milae, a new tech brand started by a brother and sister,
 - Product pictures are drawn with SVG by JavaScript functions: `wsvg` (watch), `psvg` (phone back), `fsvg` (phone front with Luxury OS), `I` (app icons), `chip` (Spark chip).
 - It must look good on phones AND laptops. On laptops (wider than 1000px) there is a separate layout in the `@media (min-width:1000px)` block.
 - Always test: no JavaScript errors, nothing wider than the screen on a 390px phone.
-- Prices: every price is made by `money(usd, inr)` in index.html. It shows dollars, then the visitor's money in brackets. Two small Vercel functions help: `api/country.js` (which country and money, from the `x-vercel-ip-country` header) and `api/rates.js` (today's exchange rates from open.er-api.com, kept by Vercel for a day). Rupee prices are Milae's own fixed prices; other money is worked out from dollars. The "Show prices in" picker is in the footer. If the country is unknown, only dollars show.
+- Prices: every price is made by `money(usd)` in index.html. It shows dollars, then the visitor's money in brackets. Two small Vercel functions help: `api/country.js` (which country and money, from the `x-vercel-ip-country` header) and `api/rates.js` (today's exchange rates from open.er-api.com, kept by Vercel for a day). The dollar price is the one that stays the same; every other money, rupees too, is worked out from it with the live rate. The "Show prices in" picker is in the footer. If the country is unknown, only dollars show.
 - `CLAUDE.md` is kept off the website by `.vercelignore`.
 - Visitor counter: Vercel Web Analytics, loaded by the two `/_vercel/insights` script lines near the top of index.html. Analytics must also be switched on in the Vercel dashboard (Project → Analytics → Enable).
 
@@ -24,6 +24,8 @@ This is the website for Milae, a new tech brand started by a brother and sister,
 - A note at the top says products have not launched yet. Keep it.
 
 ## Products
+
+Prices are set in US dollars. The ₹ amounts below are only examples; the website works out rupees with the live exchange rate.
 
 - Luxury Watch One: $135 (₹12,000). Coming 2027. Colours Black, Royal Gold, Light Blue. 570 mAh battery, about 4 days, charges in about 1.5 hours (magnetic). Swim-proof. Qualcomm Snapdragon W5. PlantAI built in.
 - Luxury Watch One Edge: $180 (₹16,000). Same, plus a faster chip and access to other AIs.
