@@ -7,8 +7,10 @@
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:560px;margin:0 auto}
-/* Size grows smoothly with the screen (see fitScreen script) */
-nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px;padding-block:18px;border-bottom:1px solid var(--line)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);background:rgba(255,255,255,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;padding-block:12px 10px;border-bottom:1px solid var(--line)}
+.brand{border:none;background:none;padding:4px 0;cursor:pointer}.brand .logo{font-size:17px}
+.hcart{display:flex;align-items:center;gap:5px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);padding:5px 11px;font:700 13px var(--sans);cursor:pointer;font-variant-numeric:tabular-nums}.hcart:hover{border-color:var(--ink)}
+nav{order:3;flex-basis:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px;padding-top:4px}
 nav button{border:none;background:none;font:inherit;font-size:13px;color:var(--muted);cursor:pointer;padding:4px 2px}
 nav button.on{color:var(--ink);font-weight:700}
 nav button:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
@@ -114,12 +116,76 @@ textarea.fld{height:90px;resize:vertical}
 .ok{font-size:14px;color:var(--ink);text-align:center;margin-top:10px}
 .list{display:grid;gap:10px;font-size:14px}
 .list div{background:var(--soft);border-radius:8px;padding:9px 12px}
-footer{padding-block:28px;text-align:center;font-size:12px;color:#999}
+.bigfoot{margin-top:40px;border-top:1px solid var(--line);padding-block:30px 22px;font-size:13px;color:var(--muted)}
+.fcols{display:grid;grid-template-columns:1fr 1fr;gap:26px 18px}
+.fbrand{grid-column:1/-1}.fbrand .logo{font-size:22px}.fbrand p{margin:10px 0 0;font-size:13px;line-height:1.6}
+.bigfoot h4{font-family:var(--sans);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);margin:0 0 10px}
+.bigfoot button{display:block;border:none;background:none;padding:4px 0;font:13px var(--sans);color:var(--muted);cursor:pointer;text-align:left}
+.bigfoot button:hover{color:var(--aqua-ink)}
+.fmail{display:block;padding:4px 0;color:var(--aqua-ink);word-break:break-all}
+.fbot{border-top:1px solid var(--line);margin-top:24px;padding-top:16px;font-size:12px;color:#999;text-align:center}
+/* detail pages: head, picture, info */
+.dgrid{display:block}
+/* gentle fade-in when a page opens */
+@keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+section:not([hidden]),#det:not([hidden]){animation:fadeup .45s ease both}
+.pc,.sp,.hero .right{transition:transform .2s ease,box-shadow .2s ease,border-color .2s}
+.pc:hover,.sp:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.07)}
+@media (prefers-reduced-motion:reduce){section:not([hidden]),#det:not([hidden]){animation:none}.pc,.sp{transition:none}.pc:hover,.sp:hover{transform:none}}
+/* ===== LAPTOP AND BIGGER ===== */
+@media (min-width:1000px){
+ body{padding-left:40px;padding-right:40px}
+ .wrap{max-width:1180px}
+ .top{flex-wrap:nowrap;padding-block:16px}
+ nav{order:0;flex-basis:auto;flex:1;padding-top:0;gap:8px 34px}
+ nav button{font-size:15px}
+ .brand .logo{font-size:22px}
+ .note{font-size:14px;padding:12px 16px}
+ .hero{min-height:calc(100vh - 190px);gap:80px;padding-block:60px;flex-wrap:nowrap}
+ .hero .left{flex:1.1}
+ .hero .logo{font-size:96px;letter-spacing:12px}
+ .hero .motto{font-size:15px;letter-spacing:6px}
+ .hero .gold-line{width:60px;margin:24px 0}
+ .hero .btn{font-size:17px;padding:15px 30px}
+ .hero .right{flex:1;padding:44px 30px;border-radius:24px;background:linear-gradient(160deg,#F7F7F7,#EEF6F7)}
+ .hero .right h4{font-size:28px!important}
+ .hero .right .eyebrow{font-size:13px!important}
+ .hero .right .price{font-size:22px!important}
+ .hero .right .btn2{font-size:16px;padding:11px 26px}
+ .sec,.cart,#contact{max-width:760px;margin-inline:auto}
+ .sec h3{font-size:22px}.sec p,.list{font-size:16px}
+ #p-about>.c,#p-smile>.c{max-width:760px;margin-inline:auto}
+ .pgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+ .pc{padding:34px 14px}.pc h4{font-size:18px}.pc .price{font-size:16px}.more{font-size:13px}
+ .sb{max-width:620px;margin-inline:auto}
+ #exList h2{font-size:34px!important}
+ .shophead{max-width:760px;margin-inline:auto}
+ #shopMain>.c{display:grid;grid-template-columns:1.4fr 1fr;gap:28px 40px;align-items:start}
+ #shopMain>.c>.eyebrow,#shopMain>.c>h2,#shopMain>.c>p{grid-column:1/-1}
+ #shopMain>.c>h2{font-size:38px!important}
+ .shopgrid{margin-bottom:0}.sp{padding:30px 16px}.sp h4{font-size:18px}
+ #notify{position:sticky;top:110px}
+ #det{max-width:1100px;margin-inline:auto}
+ .dgrid{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"pic head" "pic info";column-gap:56px;align-items:start;text-align:left}
+ .dhead{grid-area:head}.dhead h2{font-size:38px!important}.dhead .price{font-size:22px!important}
+ .dhead #gbs{justify-content:flex-start!important}
+ .dpic{grid-area:pic;position:sticky;top:110px;background:linear-gradient(160deg,#F7F7F7,#EEF6F7);border-radius:24px;padding:40px 20px;text-align:center}
+ .dpic svg{max-width:100%}
+ .dpic #bw svg,.dpic #pw>svg{width:auto;height:340px}
+ .dinfo{grid-area:info}
+ .pc .w svg{width:auto;height:130px}.pc .pphone svg{width:auto;height:150px}
+ .sp .pic svg{width:auto;height:120px}
+ .hero .right .w svg{width:auto;height:170px}
+ .fcols{grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}.fbrand{grid-column:auto}
+ .bigfoot{margin-top:60px;padding-block:44px 26px}
+}
+@media (min-width:1800px){body{zoom:1.25}}
+@media (min-width:2300px){body{zoom:1.5}}
 @media (max-width:380px){.feat{grid-template-columns:1fr}}
 </style>
 
 <div class="wrap">
-<nav id="nav" aria-label="Pages"></nav>
+<header class="top"><button class="brand" data-go="home" aria-label="Milae home"><span class="logo"></span></button><nav id="nav" aria-label="Pages"></nav><button class="hcart" id="hCart" aria-label="Open cart"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2.5l2.2 10.5h10.6L20.5 7H6.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="19" r="1.6" fill="currentColor"/><circle cx="17" cy="19" r="1.6" fill="currentColor"/></svg><span id="hCartCount">0</span></button></header>
 <div class="note" role="note"><b>Note:</b> Milae products have not launched yet. The electronics you see here are design models, not photos of the final products.</div>
 
 <!-- HOME -->
@@ -165,11 +231,9 @@ footer{padding-block:28px;text-align:center;font-size:12px;color:#999}
     <div class="sb"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="#888" stroke-width="2" fill="none"/><path d="M11 11 L15 15" stroke="#888" stroke-width="2" stroke-linecap="round"/></svg><input id="q1" data-r="r1" placeholder="Search Milae" aria-label="Search Milae"></div>
     <div class="sres" id="r1"></div>
     <div class="c" style="padding-top:18px"><p class="eyebrow blue">Milae Electronics</p><h2 style="font-size:24px;margin:6px 0 0">Explore</h2></div>
-    <div class="grid">
+    <div class="grid pgrid">
       <button class="pc" data-i="0"><span class="w" data-c="0" data-s="72"></span><h4>Watch One</h4><div class="price">$135 <span>(₹12,000)</span></div><div class="more">Tap to see more ›</div></button>
       <button class="pc" data-i="1"><span class="w" data-c="1" data-s="72"></span><h4>Watch One Edge</h4><div class="price">$180 <span>(₹16,000)</span></div><div class="more">Tap to see more ›</div></button>
-    </div>
-    <div class="grid">
       <button class="pc" data-p="0"><span class="pphone" data-c="0"></span><h4>Luxury One</h4><div class="price">$600 <span>(₹53,000)</span></div><div class="more">Tap to see more ›</div></button>
       <button class="pc" data-p="1"><span class="pphone" data-c="2"></span><h4>Luxury One Edge</h4><div class="price">$650 <span>(₹57,000)</span></div><div class="more">Tap to see more ›</div></button>
     </div>
@@ -239,7 +303,15 @@ footer{padding-block:28px;text-align:center;font-size:12px;color:#999}
   </form>
 </section>
 
-<footer>© 2026 Milae · milae-delta.vercel.app</footer>
+<footer class="bigfoot">
+  <div class="fcols">
+    <div class="fbrand"><span class="logo"></span><div class="motto" style="margin-top:10px">For The People</div><p>Smart, beautiful tech that everyone can afford.</p></div>
+    <div><h4>Products</h4><button data-open="w0">Luxury Watch One</button><button data-open="w1">Watch One Edge</button><button data-open="p0">Luxury One</button><button data-open="p1">Luxury One Edge</button></div>
+    <div><h4>Milae</h4><button data-go="about">About Us</button><button data-go="smile">Smile &amp; PlantAI</button><button data-open="os">Luxury OS</button><button data-open="sp">Spark Chips</button><button data-open="fc">Face Centre</button></div>
+    <div><h4>Help</h4><button data-go="shop">Shop</button><button data-go="contact">Contact Us</button><span class="fmail">milaeelectronics@gmail.com</span></div>
+  </div>
+  <div class="fbot">© 2026 Milae · milae-delta.vercel.app</div>
+</footer>
 </div>
 
 <script>
@@ -255,7 +327,7 @@ var exList=document.getElementById('exList'),det=document.getElementById('det');
 function closeDet(){det.hidden=true;exList.hidden=false}
 function openW(i){var w=WD[i];
  var specs=[["Shape","Square face"],["Screen","Black"],["Chip",w.chip],["AI",w.ai],["Battery","570 mAh silicon-carbon"],["Battery life","About 4 days"],["Charging","Magnetic · about 1.5 hours"],["Frame","Aluminium"],["Strap","Silicone"],["Colours","Black, Royal Gold, Light Blue"],["Watch faces","4 built in + Face Centre"]];
- det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><p class="eyebrow blue">Milae Watches</p><h2 style="font-size:23px;margin:6px 0 4px">'+w.n+'</h2><div class="price" style="font-size:18px;margin-bottom:14px">'+w.p+'</div><div id="bw">'+wsvg(w.c,120)+'</div><div class="dots" id="dd"></div><div id="dcn" style="font-size:13px;color:var(--muted);margin-top:4px">'+COL[w.c][0]+'</div>'+w.ex+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Features</h3><div class="feat" style="text-align:left">'+FEAT.map(function(f){return '<div>'+f+'</div>'}).join('')+'</div><h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Specs</h3><table style="text-align:left;margin-bottom:24px">'+specs.map(function(s){return '<tr><td>'+s[0]+'</td><td>'+s[1]+'</td></tr>'}).join('')+'</table>';
+ det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><div class="dgrid"><div class="dhead"><p class="eyebrow blue">Milae Watches</p><h2 style="font-size:23px;margin:6px 0 4px">'+w.n+'</h2><div class="price" style="font-size:18px;margin-bottom:14px">'+w.p+'</div></div><div class="dpic"><div id="bw">'+wsvg(w.c,120)+'</div><div class="dots" id="dd"></div><div id="dcn" style="font-size:13px;color:var(--muted);margin-top:4px">'+COL[w.c][0]+'</div></div><div class="dinfo">'+w.ex+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Features</h3><div class="feat" style="text-align:left">'+FEAT.map(function(f){return '<div>'+f+'</div>'}).join('')+'</div><h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Specs</h3><table style="text-align:left;margin-bottom:24px">'+specs.map(function(s){return '<tr><td>'+s[0]+'</td><td>'+s[1]+'</td></tr>'}).join('')+'</table></div></div>';
  var d=det.querySelector('#dd');
  COL.forEach(function(x,k){var b=document.createElement('button');b.style.background=x[1];b.setAttribute('aria-label',x[0]);if(k===w.c)b.className='on';
   b.onclick=function(){var s=det.querySelector('#bw');s.querySelector('.fr').setAttribute('fill',x[1]);s.querySelectorAll('.st').forEach(function(e){e.setAttribute('fill',x[2])});s.querySelector('.dt').setAttribute('fill',x[3]);det.querySelector('#dcn').textContent=x[0];[].forEach.call(d.children,function(q){q.className=''});b.className='on'};d.appendChild(b)});
@@ -319,7 +391,7 @@ function openOS(){
  det.querySelector('.back').onclick=closeDet;exList.hidden=true;det.hidden=false;window.scrollTo(0,0)}
 function openP(i){var p=PH[i],gb=0,col=0;
  function price(){return '$'+p.usd[gb]+' <span>('+inr(p.inr[gb])+')</span>'}
- det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><p class="eyebrow">Coming 2028</p><h2 style="font-size:23px;margin:6px 0 4px">'+p.n+'</h2><div class="price" id="pp" style="font-size:18px;margin-bottom:10px">'+price()+'</div><div id="gbs" style="display:flex;justify-content:center;gap:8px;margin:0 0 14px"></div><div class="gal"><div id="pw">'+fsvg(0,150)+'</div></div><div class="gthumbs" id="gth"></div><div class="dots" id="pd"></div><div id="pcn" style="font-size:13px;color:var(--muted);margin-top:4px">Black</div>'+p.ex+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Specs</h3><table style="text-align:left;margin-bottom:24px"><tr><td>Screen</td><td>'+p.scr+' inches</td></tr><tr><td>Battery</td><td>'+p.bat+' mAh silicon-carbon</td></tr><tr><td>Chip</td><td>'+p.chip+'</td></tr><tr><td>Network</td><td>'+p.net+'</td></tr><tr><td>Cameras</td><td>3: zoom, main and ultra-wide</td></tr><tr><td>Charging</td><td>'+p.chg+'</td></tr><tr><td>Frame</td><td>Aluminium</td></tr><tr><td>Storage</td><td id="pst">128 GB</td></tr><tr><td>Colours</td><td>Black, Lavender, Forest Green, Light Blue, Yellow</td></tr><tr><td>Software</td><td>Luxury OS</td></tr><tr><td>Assistant</td><td>Smile, powered by PlantAI</td></tr></table><div class="newbox"><p class="eyebrow" style="color:#2E7D46">Something New ✨</p><h3 style="font-size:20px;margin:6px 0 8px">Translator Mode</h3><p style="margin:0;font-size:14px;line-height:1.6;color:#33473A">On phone calls, pick <b>your</b> language, and you hear everything the other person says in it. It works with anyone, on any phone.</p><p style="margin:10px 0 0;font-size:13px;color:#5B6B60">In Settings, choose <b>Just me</b> or <b>Both of us</b>, so the other person hears your words in their language too.</p></div>';
+ det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><div class="dgrid"><div class="dhead"><p class="eyebrow">Coming 2028</p><h2 style="font-size:23px;margin:6px 0 4px">'+p.n+'</h2><div class="price" id="pp" style="font-size:18px;margin-bottom:10px">'+price()+'</div><div id="gbs" style="display:flex;justify-content:center;gap:8px;margin:0 0 14px"></div></div><div class="dpic"><div class="gal"><div id="pw">'+fsvg(0,150)+'</div></div><div class="gthumbs" id="gth"></div><div class="dots" id="pd"></div><div id="pcn" style="font-size:13px;color:var(--muted);margin-top:4px">Black</div></div><div class="dinfo">'+p.ex+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Specs</h3><table style="text-align:left;margin-bottom:24px"><tr><td>Screen</td><td>'+p.scr+' inches</td></tr><tr><td>Battery</td><td>'+p.bat+' mAh silicon-carbon</td></tr><tr><td>Chip</td><td>'+p.chip+'</td></tr><tr><td>Network</td><td>'+p.net+'</td></tr><tr><td>Cameras</td><td>3: zoom, main and ultra-wide</td></tr><tr><td>Charging</td><td>'+p.chg+'</td></tr><tr><td>Frame</td><td>Aluminium</td></tr><tr><td>Storage</td><td id="pst">128 GB</td></tr><tr><td>Colours</td><td>Black, Lavender, Forest Green, Light Blue, Yellow</td></tr><tr><td>Software</td><td>Luxury OS</td></tr><tr><td>Assistant</td><td>Smile, powered by PlantAI</td></tr></table><div class="newbox"><p class="eyebrow" style="color:#2E7D46">Something New ✨</p><h3 style="font-size:20px;margin:6px 0 8px">Translator Mode</h3><p style="margin:0;font-size:14px;line-height:1.6;color:#33473A">On phone calls, pick <b>your</b> language, and you hear everything the other person says in it. It works with anyone, on any phone.</p><p style="margin:10px 0 0;font-size:13px;color:#5B6B60">In Settings, choose <b>Just me</b> or <b>Both of us</b>, so the other person hears your words in their language too.</p></div></div></div>';
  var g=det.querySelector('#gbs');['128 GB','256 GB'].forEach(function(t,k){var b=document.createElement('button');b.className=k?'btn2':'btn';b.style.cssText='padding:6px 14px;font-size:12px';b.textContent=t;
   b.onclick=function(){gb=k;det.querySelector('#pp').innerHTML=price();det.querySelector('#pst').textContent=t;[].forEach.call(g.children,function(q,j){q.className=j===k?'btn':'btn2'})};g.appendChild(b)});
  var d=det.querySelector('#pd');PCOL.forEach(function(x,k){var b=document.createElement('button');b.style.background=x[1];b.setAttribute('aria-label',x[0]);if(!k)b.className='on';
@@ -369,7 +441,7 @@ document.querySelectorAll('#q1').forEach(function(inp){var R=document.getElement
 var SHOP=[{n:"Milae Luxury Watch One",s:"Watch One",usd:135,inr:12000,k:"watch watches smartwatch one luxury black gold royal blue light wrist"},
  {n:"Milae Luxury Watch One Edge",s:"Watch One Edge",usd:180,inr:16000,k:"watch watches smartwatch edge luxury pro faster gold royal black light blue wrist ai"}];
 var cart=[];try{cart=JSON.parse(localStorage.getItem('milaeCart')||'[]')||[]}catch(e){cart=[]}
-function saveCart(){try{localStorage.setItem('milaeCart',JSON.stringify(cart))}catch(e){}document.getElementById('cartCount').textContent=cart.reduce(function(a,x){return a+x.q},0)}
+function saveCart(){try{localStorage.setItem('milaeCart',JSON.stringify(cart))}catch(e){}var n=cart.reduce(function(a,x){return a+x.q},0);document.getElementById('cartCount').textContent=n;var hc=document.getElementById('hCartCount');if(hc)hc.textContent=n}
 function inr(n){return '₹'+n.toLocaleString('en-IN')}
 function addToCart(i,c){var f=cart.filter(function(x){return x.i===i&&x.c===c})[0];if(f)f.q++;else cart.push({i:i,c:c,q:1});saveCart()}
 var toastT;function toast(t){var el=document.getElementById('toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){el.hidden=true},1600)}
@@ -398,6 +470,8 @@ function renderCart(){
  cartView.querySelector('#checkout').onclick=function(){cartView.querySelector('#coMsg').hidden=false};
  cartView.querySelectorAll('[data-a]').forEach(function(b){b.onclick=function(){var x=cart[+b.dataset.n];if(b.dataset.a==='+')x.q++;else if(b.dataset.a==='-'){x.q--;if(x.q<1)cart.splice(+b.dataset.n,1)}else cart.splice(+b.dataset.n,1);saveCart();renderCart()}})}
 document.getElementById('cartBtn').onclick=openCart;
+document.getElementById('hCart').onclick=function(){go('shop');openCart()};
+document.querySelectorAll('[data-open]').forEach(function(b){b.onclick=function(){var o=b.dataset.open;go('explore');if(o==='os')openOS();else if(o==='sp')openS();else if(o==='fc')openF();else if(o[0]==='w')openW(+o[1]);else openP(+o[1])}});
 saveCart();
 /* shop search: stays inside the shop */
 var q2=document.getElementById('q2'),R2=document.getElementById('r2');
@@ -427,5 +501,3 @@ var LOGO='<svg viewBox="0 0 442 124" aria-hidden="true"><g fill="none" stroke="#
 document.querySelectorAll('.logo').forEach(function(e){e.innerHTML=LOGO;e.setAttribute('role','img');e.setAttribute('aria-label','MILAE')});
 go('home');
 </script>
-<script>/* Perfect size for every screen: phones stay 1x, bigger screens grow smoothly */
-(function(){function fit(){var z=Math.min(2.2,Math.max(1,window.innerWidth/1100));document.body.style.zoom=z}fit();addEventListener("resize",fit)})();</script>
