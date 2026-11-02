@@ -10,6 +10,8 @@ This is the website for Milae, a new tech brand started by a brother and sister,
 - Product pictures are drawn with SVG by JavaScript functions: `wsvg` (watch), `psvg` (phone back), `fsvg` (phone front with Luxury OS), `I` (app icons), `chip` (Spark chip).
 - It must look good on phones AND laptops. On laptops (wider than 1000px) there is a separate layout in the `@media (min-width:1000px)` block.
 - Always test: no JavaScript errors, nothing wider than the screen on a 390px phone.
+- Prices: every price is made by `money(usd, inr)` in index.html. It shows dollars, then the visitor's money in brackets. Two small Vercel functions help: `api/country.js` (which country and money, from the `x-vercel-ip-country` header) and `api/rates.js` (today's exchange rates from open.er-api.com, kept by Vercel for a day). Rupee prices are Milae's own fixed prices; other money is worked out from dollars. The "Show prices in" picker is in the footer. If the country is unknown, only dollars show.
+- `CLAUDE.md` is kept off the website by `.vercelignore`.
 - Visitor counter: Vercel Web Analytics, loaded by the two `/_vercel/insights` script lines near the top of index.html. Analytics must also be switched on in the Vercel dashboard (Project → Analytics → Enable).
 
 ## Brand
@@ -30,12 +32,12 @@ This is the website for Milae, a new tech brand started by a brother and sister,
 - Smile: the voice assistant ("Hey Smile"), powered by PlantAI, Milae's own AI. Comes with every Milae product (not sold in the shop).
 - Spark chips: Milae's own future chips. Coming someday.
 - Only the watches are in the Shop. Buying is a preview only: nothing is really bought.
-- Secret, NOT on the website: Milae Taker AC (2031), Luxury Fold and Luxury Flip phones.
+- Some future products are secret. Never add any product that is not listed above.
 
 ## To-do list
 
 1. ~~Visitor counter: add Vercel Web Analytics.~~ Done (switch it on in the Vercel dashboard).
-2. Prices: dollars first, then the visitor's own currency in brackets, e.g. $600 (₹53,000). Find the country with Vercel's `x-vercel-ip-country` header (small Vercel function). Live exchange rates, updated daily. A "Show prices in" picker. If the country can't be found, show only dollars.
+2. ~~Prices: dollars first, then the visitor's own currency in brackets, e.g. $600 (₹53,000). Find the country with Vercel's `x-vercel-ip-country` header (small Vercel function). Live exchange rates, updated daily. A "Show prices in" picker. If the country can't be found, show only dollars.~~ Done.
 3. Contact form: send messages to milaeelectronics@gmail.com (for example with Formspree).
 4. Notify Me (Shop): save emails of people who want to know when watches launch.
 5. Later: Continue with Google sign-in, a custom domain (milaeworld.com), "and Dad" in Special Thanks, and PlantAI at plantai.milaeworld.com.

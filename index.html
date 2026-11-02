@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Milae</title>
 <!-- Visitor counter: Vercel Web Analytics -->
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
@@ -125,6 +126,7 @@ textarea.fld{height:90px;resize:vertical}
 .bigfoot h4{font-family:var(--sans);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);margin:0 0 10px}
 .bigfoot button{display:block;border:none;background:none;padding:4px 0;font:13px var(--sans);color:var(--muted);cursor:pointer;text-align:left}
 .bigfoot button:hover{color:var(--aqua-ink)}
+.curpick{margin-top:24px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}.curpick label{color:var(--ink);font-weight:600}.curpick select{font:13px var(--sans);padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);max-width:100%;min-width:0}.curpick small{flex-basis:100%;color:#999;font-size:12px}
 .fmail{display:block;padding:4px 0;color:var(--aqua-ink);word-break:break-all}
 .fbot{border-top:1px solid var(--line);margin-top:24px;padding-top:16px;font-size:12px;color:#999;text-align:center}
 /* detail pages: head, picture, info */
@@ -204,7 +206,7 @@ section:not([hidden]),#det:not([hidden]){animation:fadeup .45s ease both}
       <p class="eyebrow" style="font-size:10px">Coming 2027</p>
       <h4 style="margin:4px 0 10px;font-size:15px">Luxury Watch One</h4>
       <span class="w" data-c="0" data-s="64"></span>
-      <div class="price" style="margin:8px 0 10px;font-size:14px">From $135 <span>(₹12,000)</span></div>
+      <div class="price" style="margin:8px 0 10px;font-size:14px">From <data class="mp" value="135" data-inr="12000">$135 <span>(₹12,000)</span></data></div>
       <button class="btn2" data-go="explore">Explore</button>
     </div>
   </div>
@@ -235,10 +237,10 @@ section:not([hidden]),#det:not([hidden]){animation:fadeup .45s ease both}
     <div class="sres" id="r1"></div>
     <div class="c" style="padding-top:18px"><p class="eyebrow blue">Milae Electronics</p><h2 style="font-size:24px;margin:6px 0 0">Explore</h2></div>
     <div class="grid pgrid">
-      <button class="pc" data-i="0"><span class="w" data-c="0" data-s="72"></span><h4>Watch One</h4><div class="price">$135 <span>(₹12,000)</span></div><div class="more">Tap to see more ›</div></button>
-      <button class="pc" data-i="1"><span class="w" data-c="1" data-s="72"></span><h4>Watch One Edge</h4><div class="price">$180 <span>(₹16,000)</span></div><div class="more">Tap to see more ›</div></button>
-      <button class="pc" data-p="0"><span class="pphone" data-c="0"></span><h4>Luxury One</h4><div class="price">$600 <span>(₹53,000)</span></div><div class="more">Tap to see more ›</div></button>
-      <button class="pc" data-p="1"><span class="pphone" data-c="2"></span><h4>Luxury One Edge</h4><div class="price">$650 <span>(₹57,000)</span></div><div class="more">Tap to see more ›</div></button>
+      <button class="pc" data-i="0"><span class="w" data-c="0" data-s="72"></span><h4>Watch One</h4><div class="price"><data class="mp" value="135" data-inr="12000">$135 <span>(₹12,000)</span></data></div><div class="more">Tap to see more ›</div></button>
+      <button class="pc" data-i="1"><span class="w" data-c="1" data-s="72"></span><h4>Watch One Edge</h4><div class="price"><data class="mp" value="180" data-inr="16000">$180 <span>(₹16,000)</span></data></div><div class="more">Tap to see more ›</div></button>
+      <button class="pc" data-p="0"><span class="pphone" data-c="0"></span><h4>Luxury One</h4><div class="price"><data class="mp" value="600" data-inr="53000">$600 <span>(₹53,000)</span></data></div><div class="more">Tap to see more ›</div></button>
+      <button class="pc" data-p="1"><span class="pphone" data-c="2"></span><h4>Luxury One Edge</h4><div class="price"><data class="mp" value="650" data-inr="57000">$650 <span>(₹57,000)</span></data></div><div class="more">Tap to see more ›</div></button>
     </div>
   </div>
   <div id="det" class="c" hidden></div>
@@ -313,24 +315,57 @@ section:not([hidden]),#det:not([hidden]){animation:fadeup .45s ease both}
     <div><h4>Milae</h4><button data-go="about">About Us</button><button data-go="smile">Smile &amp; PlantAI</button><button data-open="os">Luxury OS</button><button data-open="sp">Spark Chips</button><button data-open="fc">Face Centre</button></div>
     <div><h4>Help</h4><button data-go="shop">Shop</button><button data-go="contact">Contact Us</button><span class="fmail">milaeelectronics@gmail.com</span></div>
   </div>
+  <div class="curpick"><label for="curSel">Show prices in</label><select id="curSel"></select><small>Rupee prices are Milae's own. Other money is a guess from today's exchange rate, updated every day.</small></div>
   <div class="fbot">© 2026 Milae · milae-delta.vercel.app</div>
 </footer>
 </div>
 
 <script>
+/* ---------- PRICES: dollars first, then the visitor's own money in brackets ----------
+   /api/country says which money the visitor uses; /api/rates gives today's exchange rates.
+   Rupee prices are Milae's own fixed prices. Other money is worked out from the dollar price.
+   If we can't tell the country, only dollars are shown. */
+var CUR=null,RATES=null;
+function inr(n){return '₹'+n.toLocaleString('en-IN')}
+function localPrice(u,r){
+ if(!CUR||CUR==='USD')return '';
+ if(CUR==='INR'&&r!=null)return inr(r);
+ if(!RATES||!RATES[CUR])return '';
+ var v=u*RATES[CUR],o={style:'currency',currency:CUR};
+ if(v>=100){o.minimumFractionDigits=0;o.maximumFractionDigits=0}
+ try{return new Intl.NumberFormat(CUR==='INR'?'en-IN':'en',o).format(v)}catch(e){return ''}}
+function priceInner(u,r){var l=localPrice(u,r);return '$'+u+(l?' <span>('+l+')</span>':'')}
+function money(u,r){return '<data class="mp" value="'+u+'"'+(r!=null?' data-inr="'+r+'"':'')+'>'+priceInner(u,r)+'</data>'}
+function repaint(){document.querySelectorAll('data.mp').forEach(function(e){e.innerHTML=priceInner(+e.value,e.dataset.inr?+e.dataset.inr:null)})}
+function curName(c){try{return new Intl.DisplayNames(['en'],{type:'currency'}).of(c)+' ('+c+')'}catch(e){return c}}
+function fillPicker(){var sel=document.getElementById('curSel');if(!sel)return;
+ var list=RATES?Object.keys(RATES):['INR'];if(CUR&&list.indexOf(CUR)<0)list.push(CUR);
+ list=list.filter(function(c){return c!=='USD'}).map(function(c){return [c,curName(c)]}).sort(function(a,b){return a[1]<b[1]?-1:1});
+ sel.innerHTML='<option value="USD">US dollars only</option>'+list.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('');
+ sel.value=CUR||'USD'}
+function setCur(c){CUR=c&&c!=='USD'?c:null;repaint();fillPicker()}
+function getJSON(u){return fetch(u).then(function(r){return r.ok?r.json():null}).catch(function(){return null})}
+function startPrices(){
+ var saved=null;try{saved=localStorage.getItem('milaeCur')}catch(e){}
+ var sel=document.getElementById('curSel');
+ if(sel)sel.onchange=function(){try{localStorage.setItem('milaeCur',sel.value)}catch(e){}setCur(sel.value)};
+ fillPicker();
+ var rp=getJSON('/api/rates').then(function(j){if(j&&j.rates)RATES=j.rates});
+ if(saved){setCur(saved);rp.then(function(){setCur(saved)});return}
+ Promise.all([rp,getJSON('/api/country')]).then(function(a){var j=a[1];setCur(j&&j.currency)})}
 var COL=[["Black","#2A2A2A","#1A1A1A","#bbb"],["Royal Gold","#D4AF37","#B8941F","#D4AF37"],["Light Blue","#A7D3F0","#8EC5E8","#A7D3F0"]];
 function wsvg(c,w){var x=COL[c],h=Math.round(w*76/56);return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 56 76" aria-hidden="true"><rect class="st" x="16" y="0" width="24" height="16" rx="3" fill="'+x[2]+'"/><rect class="st" x="16" y="60" width="24" height="16" rx="3" fill="'+x[2]+'"/><rect class="fr" x="4" y="12" width="48" height="52" rx="10" fill="'+x[1]+'"/><rect x="9" y="17" width="38" height="42" rx="6" fill="#050505"/><text x="28" y="40" text-anchor="middle" fill="#fff" font-size="11" font-family="sans-serif" font-weight="600">10:09</text><text class="dt" x="28" y="51" text-anchor="middle" fill="'+x[3]+'" font-size="6" font-family="sans-serif">Sun, 12 Sep</text></svg>'}
 document.querySelectorAll('.w').forEach(function(el){el.innerHTML=wsvg(+el.dataset.c,+(el.dataset.s||56))});
 
 var FEAT=["👣 Step counter","📞 Calls &amp; messages","😊 Smile assistant","🎮 Mini games","⏰ Alarms &amp; timers","🏊 Swim-proof","❤️ Heart checker","📍 GPS","💎 Super strong glass","🌱 PlantAI built in"];
 var WD=[
- {n:"Milae Luxury Watch One",p:'$135 <span>(₹12,000)</span>',c:0,chip:"Qualcomm Snapdragon W5",ai:"PlantAI",ex:""},
- {n:"Milae Luxury Watch One Edge",p:'$180 <span>(₹16,000)</span>',c:1,chip:"Faster Qualcomm Snapdragon",ai:"PlantAI + other AIs",ex:'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Only on Edge</h3><div class="callout" style="text-align:left;font-size:14px">⚡ <b>Faster chip</b>: apps and games open quicker<br>🤖 <b>Access to other AIs</b>: not just PlantAI</div>'}];
+ {n:"Milae Luxury Watch One",usd:135,inr:12000,c:0,chip:"Qualcomm Snapdragon W5",ai:"PlantAI",ex:""},
+ {n:"Milae Luxury Watch One Edge",usd:180,inr:16000,c:1,chip:"Faster Qualcomm Snapdragon",ai:"PlantAI + other AIs",ex:'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Only on Edge</h3><div class="callout" style="text-align:left;font-size:14px">⚡ <b>Faster chip</b>: apps and games open quicker<br>🤖 <b>Access to other AIs</b>: not just PlantAI</div>'}];
 var exList=document.getElementById('exList'),det=document.getElementById('det');
 function closeDet(){det.hidden=true;exList.hidden=false}
 function openW(i){var w=WD[i];
  var specs=[["Shape","Square face"],["Screen","Black"],["Chip",w.chip],["AI",w.ai],["Battery","570 mAh silicon-carbon"],["Battery life","About 4 days"],["Charging","Magnetic · about 1.5 hours"],["Frame","Aluminium"],["Strap","Silicone"],["Colours","Black, Royal Gold, Light Blue"],["Watch faces","4 built in + Face Centre"]];
- det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><div class="dgrid"><div class="dhead"><p class="eyebrow blue">Milae Watches</p><h2 style="font-size:23px;margin:6px 0 4px">'+w.n+'</h2><div class="price" style="font-size:18px;margin-bottom:14px">'+w.p+'</div></div><div class="dpic"><div id="bw">'+wsvg(w.c,120)+'</div><div class="dots" id="dd"></div><div id="dcn" style="font-size:13px;color:var(--muted);margin-top:4px">'+COL[w.c][0]+'</div></div><div class="dinfo">'+w.ex+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Features</h3><div class="feat" style="text-align:left">'+FEAT.map(function(f){return '<div>'+f+'</div>'}).join('')+'</div><h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Specs</h3><table style="text-align:left;margin-bottom:24px">'+specs.map(function(s){return '<tr><td>'+s[0]+'</td><td>'+s[1]+'</td></tr>'}).join('')+'</table></div></div>';
+ det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><div class="dgrid"><div class="dhead"><p class="eyebrow blue">Milae Watches</p><h2 style="font-size:23px;margin:6px 0 4px">'+w.n+'</h2><div class="price" style="font-size:18px;margin-bottom:14px">'+money(w.usd,w.inr)+'</div></div><div class="dpic"><div id="bw">'+wsvg(w.c,120)+'</div><div class="dots" id="dd"></div><div id="dcn" style="font-size:13px;color:var(--muted);margin-top:4px">'+COL[w.c][0]+'</div></div><div class="dinfo">'+w.ex+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Features</h3><div class="feat" style="text-align:left">'+FEAT.map(function(f){return '<div>'+f+'</div>'}).join('')+'</div><h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Specs</h3><table style="text-align:left;margin-bottom:24px">'+specs.map(function(s){return '<tr><td>'+s[0]+'</td><td>'+s[1]+'</td></tr>'}).join('')+'</table></div></div>';
  var d=det.querySelector('#dd');
  COL.forEach(function(x,k){var b=document.createElement('button');b.style.background=x[1];b.setAttribute('aria-label',x[0]);if(k===w.c)b.className='on';
   b.onclick=function(){var s=det.querySelector('#bw');s.querySelector('.fr').setAttribute('fill',x[1]);s.querySelectorAll('.st').forEach(function(e){e.setAttribute('fill',x[2])});s.querySelector('.dt').setAttribute('fill',x[3]);det.querySelector('#dcn').textContent=x[0];[].forEach.call(d.children,function(q){q.className=''});b.className='on'};d.appendChild(b)});
@@ -343,7 +378,7 @@ var FACES=[
  ["Data",'<text x="28" y="22" text-anchor="middle" fill="#fff" font-size="11" font-family="sans-serif" font-weight="600">10:09</text><g font-family="sans-serif" font-size="5"><circle cx="14" cy="31" r="2" fill="#3CC8D8"/><text x="18" y="32.8" fill="#ddd">6,240 steps</text><circle cx="14" cy="39" r="2" fill="#F59E3B"/><text x="18" y="40.8" fill="#ddd">320 kcal</text><circle cx="14" cy="47" r="2" fill="#F06A8A"/><text x="18" y="48.8" fill="#ddd">72 bpm</text></g>'],
  ["Big Numbers",'<text x="28" y="30" text-anchor="middle" fill="#fff" font-size="19" font-family="sans-serif" font-weight="700">10</text><text x="28" y="50" text-anchor="middle" fill="#fff" font-size="19" font-family="sans-serif" font-weight="700">09</text>']];
 function openF(){
- det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><p class="eyebrow blue">Milae Watches</p><h2 style="font-size:23px;margin:6px 0 6px">Face Centre</h2><p style="font-size:14px;color:var(--muted);margin:0 0 18px">Change how your watch looks, any time you like.</p><h3 style="text-align:left;font-size:17px;margin:0 0 10px">Built-in Faces</h3><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px">'+FACES.map(function(f){return '<div>'+face(f[1])+'<div style="font-size:12px;color:var(--ink);margin-top:4px">'+f[0]+'</div></div>'}).join('')+'</div><h3 style="text-align:left;font-size:17px;margin:20px 0 8px">In Face Centre</h3><div class="list" style="text-align:left;margin-bottom:14px"><div>🆓 Most faces are free</div><div>⭐ Some special faces are premium (prices depend on the face)</div></div><div class="callout" style="margin-bottom:24px"><b>Want to create your own?</b><br>Design your very own watch face. Your first one is free!<br><span style="font-size:13px;color:var(--muted)">After that, $0.59 (₹52) each.</span></div>';
+ det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><p class="eyebrow blue">Milae Watches</p><h2 style="font-size:23px;margin:6px 0 6px">Face Centre</h2><p style="font-size:14px;color:var(--muted);margin:0 0 18px">Change how your watch looks, any time you like.</p><h3 style="text-align:left;font-size:17px;margin:0 0 10px">Built-in Faces</h3><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px">'+FACES.map(function(f){return '<div>'+face(f[1])+'<div style="font-size:12px;color:var(--ink);margin-top:4px">'+f[0]+'</div></div>'}).join('')+'</div><h3 style="text-align:left;font-size:17px;margin:20px 0 8px">In Face Centre</h3><div class="list" style="text-align:left;margin-bottom:14px"><div>🆓 Most faces are free</div><div>⭐ Some special faces are premium (prices depend on the face)</div></div><div class="callout" style="margin-bottom:24px"><b>Want to create your own?</b><br>Design your very own watch face. Your first one is free!<br><span style="font-size:13px;color:var(--muted)">After that, '+money(0.59,52)+' each.</span></div>';
  det.querySelector('.back').onclick=closeDet;
  exList.hidden=true;det.hidden=false;window.scrollTo(0,0)}
 function chip(letter,w){return '<svg width="'+w+'" height="'+w+'" viewBox="0 0 120 120" aria-hidden="true"><g stroke="#B8941F" stroke-width="5" stroke-linecap="round"><path d="M38 6V20M60 6V20M82 6V20M38 100V114M60 100V114M82 100V114M6 38H20M6 60H20M6 82H20M100 38H114M100 60H114M100 82H114"/></g><rect x="20" y="20" width="80" height="80" rx="14" fill="#111" stroke="#D4AF37" stroke-width="3"/><path d="M64 32 L46 62 H60 L54 88 L76 54 H62 Z" fill="#3CC8D8"/>'+(letter?'<text x="88" y="92" text-anchor="end" font-family="system-ui,sans-serif" font-weight="800" font-size="20" fill="#D4AF37">'+letter+'</text>':'')+'</svg>'}
@@ -393,7 +428,7 @@ function openOS(){
  det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><p class="eyebrow">Coming 2028</p><h2 style="font-size:23px;margin:6px 0 6px">Luxury OS</h2><p style="font-size:14px;color:var(--muted);margin:0 0 16px">The software inside every Milae phone.</p>'+fsvg(0,150)+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">What’s inside</h3><div class="list" style="text-align:left;margin-bottom:14px"><div>😊 <b>Smile</b> built in: just say “Hey Smile”</div><div>🌱 <b>PlantAI</b>, Milae’s own AI, right in the dock</div><div>🛍️ <b>App Centre</b> for new apps</div><div>🌍 <b>Translator Mode</b> on phone calls</div><div>⌚ Connect Milae devices in <b>Settings → Devices</b></div></div><div class="callout" style="margin-bottom:24px;font-size:14px">Comes with every Milae phone.</div>';
  det.querySelector('.back').onclick=closeDet;exList.hidden=true;det.hidden=false;window.scrollTo(0,0)}
 function openP(i){var p=PH[i],gb=0,col=0;
- function price(){return '$'+p.usd[gb]+' <span>('+inr(p.inr[gb])+')</span>'}
+ function price(){return money(p.usd[gb],p.inr[gb])}
  det.innerHTML='<div style="text-align:left"><button class="back">‹ Back to Explore</button></div><div class="dgrid"><div class="dhead"><p class="eyebrow">Coming 2028</p><h2 style="font-size:23px;margin:6px 0 4px">'+p.n+'</h2><div class="price" id="pp" style="font-size:18px;margin-bottom:10px">'+price()+'</div><div id="gbs" style="display:flex;justify-content:center;gap:8px;margin:0 0 14px"></div></div><div class="dpic"><div class="gal"><div id="pw">'+fsvg(0,150)+'</div></div><div class="gthumbs" id="gth"></div><div class="dots" id="pd"></div><div id="pcn" style="font-size:13px;color:var(--muted);margin-top:4px">Black</div></div><div class="dinfo">'+p.ex+'<h3 style="text-align:left;font-size:17px;margin:20px 0 8px">Specs</h3><table style="text-align:left;margin-bottom:24px"><tr><td>Screen</td><td>'+p.scr+' inches</td></tr><tr><td>Battery</td><td>'+p.bat+' mAh silicon-carbon</td></tr><tr><td>Chip</td><td>'+p.chip+'</td></tr><tr><td>Network</td><td>'+p.net+'</td></tr><tr><td>Cameras</td><td>3: zoom, main and ultra-wide</td></tr><tr><td>Charging</td><td>'+p.chg+'</td></tr><tr><td>Frame</td><td>Aluminium</td></tr><tr><td>Storage</td><td id="pst">128 GB</td></tr><tr><td>Colours</td><td>Black, Lavender, Forest Green, Light Blue, Yellow</td></tr><tr><td>Software</td><td>Luxury OS</td></tr><tr><td>Assistant</td><td>Smile, powered by PlantAI</td></tr></table><div class="newbox"><p class="eyebrow" style="color:#2E7D46">Something New ✨</p><h3 style="font-size:20px;margin:6px 0 8px">Translator Mode</h3><p style="margin:0;font-size:14px;line-height:1.6;color:#33473A">On phone calls, pick <b>your</b> language, and you hear everything the other person says in it. It works with anyone, on any phone.</p><p style="margin:10px 0 0;font-size:13px;color:#5B6B60">In Settings, choose <b>Just me</b> or <b>Both of us</b>, so the other person hears your words in their language too.</p></div></div></div>';
  var g=det.querySelector('#gbs');['128 GB','256 GB'].forEach(function(t,k){var b=document.createElement('button');b.className=k?'btn2':'btn';b.style.cssText='padding:6px 14px;font-size:12px';b.textContent=t;
   b.onclick=function(){gb=k;det.querySelector('#pp').innerHTML=price();det.querySelector('#pst').textContent=t;[].forEach.call(g.children,function(q,j){q.className=j===k?'btn':'btn2'})};g.appendChild(b)});
@@ -422,8 +457,8 @@ document.getElementById('gbtn').onclick=function(){document.getElementById('ok1'
 document.getElementById('contact').addEventListener('submit',function(e){e.preventDefault();document.getElementById('ok2').hidden=false});
 
 var ITEMS=[
- {k:"watch watches smartwatch one luxury black gold royal blue light wrist",t:"Milae Luxury Watch One",d:"$135 (₹12,000) · Coming 2027",w:0},
- {k:"watch watches smartwatch edge luxury pro faster gold royal black light blue wrist ai",t:"Milae Luxury Watch One Edge",d:"$180 (₹16,000) · Coming 2027",w:1},
+ {k:"watch watches smartwatch one luxury black gold royal blue light wrist",t:"Milae Luxury Watch One",u:135,r:12000,d:" · Coming 2027",w:0},
+ {k:"watch watches smartwatch edge luxury pro faster gold royal black light blue wrist ai",t:"Milae Luxury Watch One Edge",u:180,r:16000,d:" · Coming 2027",w:1},
  {k:"phone phones mobile smartphone luxury one os translator translate translation mode",t:"Milae Luxury One",d:"Milae's first phone · Coming 2028",ph:0},
  {k:"phone phones mobile smartphone luxury edge pro os translator translate translation mode",t:"Milae Luxury One Edge",d:"The upgraded Milae phone · Coming 2028",ph:1},
  {k:"smile assistant voice helper",t:"Smile",d:"Milae's friendly assistant",go:"smile"},
@@ -438,19 +473,18 @@ document.querySelectorAll('#q1').forEach(function(inp){var R=document.getElement
   var ws=v.split(/\s+/).map(function(w){return w.length>3?w.replace(/s$/,''):w});
   var h=ITEMS.filter(function(it){var hay=(it.k+' '+it.t).toLowerCase();return ws.every(function(w){return hay.indexOf(w)>-1})});
   if(!h.length){R.innerHTML='<div class="sorry">Sorry, we couldn\'t find "<b>'+esc(inp.value.trim())+'</b>". Try something else.</div>';return}
-  R.innerHTML='';h.forEach(function(it){var d=document.createElement('button');d.className='sr';d.innerHTML='<b>'+it.t+'</b>'+it.d;
+  R.innerHTML='';h.forEach(function(it){var d=document.createElement('button');d.className='sr';d.innerHTML='<b>'+it.t+'</b>'+(it.u?money(it.u,it.r):'')+it.d;
    d.onclick=function(){inp.value='';R.innerHTML='';if(it.os){go('explore');openOS()}else if(it.sp){go('explore');openS()}else if(it.fc){go('explore');openF()}else if(it.w!==undefined){go('explore');openW(it.w)}else if(it.ph!==undefined){go('explore');openP(it.ph)}else go(it.go)};R.appendChild(d)})}});
 /* ---------- SHOP + CART ---------- */
 var SHOP=[{n:"Milae Luxury Watch One",s:"Watch One",usd:135,inr:12000,k:"watch watches smartwatch one luxury black gold royal blue light wrist"},
  {n:"Milae Luxury Watch One Edge",s:"Watch One Edge",usd:180,inr:16000,k:"watch watches smartwatch edge luxury pro faster gold royal black light blue wrist ai"}];
 var cart=[];try{cart=JSON.parse(localStorage.getItem('milaeCart')||'[]')||[]}catch(e){cart=[]}
 function saveCart(){try{localStorage.setItem('milaeCart',JSON.stringify(cart))}catch(e){}var n=cart.reduce(function(a,x){return a+x.q},0);document.getElementById('cartCount').textContent=n;var hc=document.getElementById('hCartCount');if(hc)hc.textContent=n}
-function inr(n){return '₹'+n.toLocaleString('en-IN')}
 function addToCart(i,c){var f=cart.filter(function(x){return x.i===i&&x.c===c})[0];if(f)f.q++;else cart.push({i:i,c:c,q:1});saveCart()}
 var toastT;function toast(t){var el=document.getElementById('toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){el.hidden=true},1600)}
 var grid=document.getElementById('shopGrid');
 SHOP.forEach(function(p,i){var sel=i;var card=document.createElement('div');card.className='sp';card.dataset.i=i;
- card.innerHTML='<div class="pic">'+wsvg(i,64)+'</div><h4>'+p.s+'</h4><div class="price" style="font-size:14px">$'+p.usd+' <span>('+inr(p.inr)+')</span></div><div class="dots"></div><div class="cname">'+COL[i][0]+'</div><button class="btn2 add">Add to Cart</button><button class="btn buy">Buy Now</button><div class="ordered" hidden><b>Order placed!</b> Arriving in 4 to 5 days.<small>Preview only. Nothing was really bought.</small></div>';
+ card.innerHTML='<div class="pic">'+wsvg(i,64)+'</div><h4>'+p.s+'</h4><div class="price" style="font-size:14px">'+money(p.usd,p.inr)+'</div><div class="dots"></div><div class="cname">'+COL[i][0]+'</div><button class="btn2 add">Add to Cart</button><button class="btn buy">Buy Now</button><div class="ordered" hidden><b>Order placed!</b> Arriving in 4 to 5 days.<small>Preview only. Nothing was really bought.</small></div>';
  var d=card.querySelector('.dots');
  COL.forEach(function(x,k){var b=document.createElement('button');b.style.background=x[1];b.setAttribute('aria-label',x[0]);if(k===sel)b.className='on';
   b.onclick=function(){sel=k;card.querySelector('.pic').innerHTML=wsvg(k,64);card.querySelector('.cname').textContent=x[0];[].forEach.call(d.children,function(q){q.className=''});b.className='on'};d.appendChild(b)});
@@ -466,8 +500,8 @@ function renderCart(){
   cartView.querySelector('#cShop').onclick=closeCart;return}
  var tu=0,ti=0;
  cart.forEach(function(x,n){var p=SHOP[x.i];tu+=p.usd*x.q;ti+=p.inr*x.q;
-  h+='<div class="ci">'+wsvg(x.c,40)+'<div class="info"><b>'+p.s+'</b><small>'+COL[x.c][0]+'</small><div class="qty"><button data-a="-" data-n="'+n+'" aria-label="One less">−</button><span>'+x.q+'</span><button data-a="+" data-n="'+n+'" aria-label="One more">+</button><button class="rm" data-a="x" data-n="'+n+'">Remove</button></div></div><div class="lp">$'+(p.usd*x.q)+'<span>('+inr(p.inr*x.q)+')</span></div></div>'});
- h+='<div class="total"><div>Total</div><div>$'+tu+' <span>('+inr(ti)+')</span></div></div><button class="btn" style="width:100%" id="checkout">Buy All</button><div class="callout" id="coMsg" style="margin-top:14px;font-size:14px" hidden><b>Order placed!</b> Arriving in 4 to 5 days.<br><small style="color:var(--muted)">Preview only. Nothing was really bought.</small></div></div>';
+  h+='<div class="ci">'+wsvg(x.c,40)+'<div class="info"><b>'+p.s+'</b><small>'+COL[x.c][0]+'</small><div class="qty"><button data-a="-" data-n="'+n+'" aria-label="One less">−</button><span>'+x.q+'</span><button data-a="+" data-n="'+n+'" aria-label="One more">+</button><button class="rm" data-a="x" data-n="'+n+'">Remove</button></div></div><div class="lp">'+money(p.usd*x.q,p.inr*x.q)+'</div></div>'});
+ h+='<div class="total"><div>Total</div><div>'+money(tu,ti)+'</div></div><button class="btn" style="width:100%" id="checkout">Buy All</button><div class="callout" id="coMsg" style="margin-top:14px;font-size:14px" hidden><b>Order placed!</b> Arriving in 4 to 5 days.<br><small style="color:var(--muted)">Preview only. Nothing was really bought.</small></div></div>';
  cartView.innerHTML=h.replace('padding-top:16px"><p class="eyebrow">','"><button class="back" id="cBack">‹ Back to Shop</button><p class="eyebrow">');
  cartView.querySelector('#cBack').onclick=closeCart;
  cartView.querySelector('#checkout').onclick=function(){cartView.querySelector('#coMsg').hidden=false};
@@ -487,7 +521,7 @@ q2.oninput=function(){var v=q2.value.trim().toLowerCase();
  function hit(hay){hay=hay.toLowerCase();return ws.every(function(w){return hay.indexOf(w)>-1})}
  var shopHits=SHOP.map(function(p,i){return i}).filter(function(i){return hit(SHOP[i].k+' '+SHOP[i].n)});
  if(shopHits.length){
-  shopHits.forEach(function(i){var p=SHOP[i];var d=document.createElement('button');d.className='sr';d.innerHTML='<b>'+p.n+'</b>$'+p.usd+' ('+inr(p.inr)+') <span class="go">›</span>';
+  shopHits.forEach(function(i){var p=SHOP[i];var d=document.createElement('button');d.className='sr';d.innerHTML='<b>'+p.n+'</b>'+money(p.usd,p.inr)+' <span class="go">›</span>';
    d.onclick=function(){[].forEach.call(cards,function(c){c.hidden=+c.dataset.i!==i});var c=grid.querySelector('[data-i="'+i+'"]');c.classList.add('picked');
     R2.innerHTML='';var all=document.createElement('button');all.className='back';all.style.margin='0';all.textContent='Show all watches';all.onclick=function(){q2.value='';q2.oninput()};R2.appendChild(all);
     c.scrollIntoView({behavior:'smooth',block:'center'})};
@@ -503,4 +537,5 @@ q2.oninput=function(){var v=q2.value.trim().toLowerCase();
 var LOGO='<svg viewBox="0 0 442 124" aria-hidden="true"><g fill="none" stroke="#3CC8D8" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" transform="translate(4,4)"><path d="M6 106 L16 12 L46 80 L76 12 L86 106"/><path d="M114 14 H150 M132 14 V106 M114 106 H150"/><path d="M180 12 V106 H232"/><path d="M260 106 L286 44 M296 12 L324 106"/><path d="M356 14 V104 M356 14 H426 M356 59 H414 M356 104 H426"/></g></svg>';
 document.querySelectorAll('.logo').forEach(function(e){e.innerHTML=LOGO;e.setAttribute('role','img');e.setAttribute('aria-label','MILAE')});
 go('home');
+startPrices();
 </script>
