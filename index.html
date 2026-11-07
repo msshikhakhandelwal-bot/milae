@@ -547,6 +547,7 @@ q2.oninput=function(){var v=q2.value.trim().toLowerCase();
 var LOGO='<svg viewBox="0 0 442 124" aria-hidden="true"><g fill="none" stroke="#3CC8D8" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" transform="translate(4,4)"><path d="M6 106 L16 12 L46 80 L76 12 L86 106"/><path d="M114 14 H150 M132 14 V106 M114 106 H150"/><path d="M180 12 V106 H232"/><path d="M260 106 L286 44 M296 12 L324 106"/><path d="M356 14 V104 M356 14 H426 M356 59 H414 M356 104 H426"/></g></svg>';
 document.querySelectorAll('.logo').forEach(function(e){e.innerHTML=LOGO;e.setAttribute('role','img');e.setAttribute('aria-label','MILAE')});
 go('home');
-startPrices();
+ITEMS.forEach(function(it){if(it.os)it.k+=' app apps centre center store'})
+;startPrices();
 </script>
 <style>#cartBtn{display:none}.shophead .sb{margin:0 auto!important}</style>
